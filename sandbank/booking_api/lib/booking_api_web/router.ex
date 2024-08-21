@@ -7,6 +7,9 @@ defmodule BookingApiWeb.Router do
 
   scope "/api", BookingApiWeb do
     pipe_through :api
+    post "/orders", OrdersController, :new
+    put "/orders/:id", OrdersController, :update
+    delete "/orders/:id", OrdersController, :delete
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
