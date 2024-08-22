@@ -7,6 +7,7 @@ defmodule BookingApi.Payments.PaymentOrder do
   schema "payment_orders" do
     field :status, :string
     field :value, :decimal
+    field :order_id, :binary_id
 
     timestamps(type: :utc_datetime)
   end

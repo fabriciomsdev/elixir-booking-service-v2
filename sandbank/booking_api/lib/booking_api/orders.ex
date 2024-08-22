@@ -7,12 +7,26 @@ defmodule BookingApi.OrdersManagement do
   alias BookingApi.Repo
   alias BookingApi.Orders.Customer
   alias BookingApi.Orders.Order
+  alias BookingApi.Payments
+  alias BookingApi.Stores
+  alias BookingApi.Orders.ItemsClassification
+  alias BookingApi.BussinessValidationError
+
+  def get_store_by_id(store_id) do
+    store = Stores.get_store(store_id)
+    if store == nil do
+      raise %BussinessValidationError{message: "Store not found"}
+    end
+
+    store
+  end
 
   def start_order(store_id) do
-    # Create order
+    store = get_store_by_id(store_id)
+
     %Order{}
     |> Order.changeset(%{
-      store_id: store_id,
+      store_id: store.id,
       status: "started",
       total_value: 0.0,
       items_quantity: 0
@@ -20,23 +34,54 @@ defmodule BookingApi.OrdersManagement do
     |> Repo.insert()
   end
 
-  def get_order!(id), do: Repo.get!(Order, id)
+  def get_order(id) do
+    order = Repo.get(Order, id)
 
-  def process_order(id, store_id, items, customer, payment_order) do
-    # Update order
-    #find order
-    order = get_order!(id)
+    if order == nil do
+      raise %BussinessValidationError{message: "Order not found"}
+    end
 
-    # update order with items
+    order
+  end
+
+  def register_a_customer(attrs) do
+    %Customer{}
+    |> Customer.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def get_item_classification_by_name(name) do
+    classfication = Repo.one(from i in ItemsClassification, where: i.name == ^name)
+
+    if classfication == nil do
+      raise %BussinessValidationError{message: "Classification of Item to store not found" }
+    end
+
+    classfication
+  end
+
+  def process_order(id, store_id, item, customer) do
+    order = get_order(id)
+    item_classification = get_item_classification_by_name(item.name)
+    store = get_store_by_id(store_id)
+
+    {:ok, customer} = register_a_customer(customer)
+    {:ok, payment_order} = Payments.create_payment_order(%{
+      order_id: order.id,
+      value: Decimal.to_float(item_classification.value_to_store) * item.quantity,
+      status: "pending"
+    })
+
     order
     |> Order.changeset(%{
-      items: items,
-      customer: customer,
-      payment_order: payment_order,
+      customer_id: customer.id,
+      payment_order_id: payment_order.id,
+      store_id: store.id,
+      items_classification_id: item_classification.id,
+      total_value: payment_order.value,
       status: "filled"
     })
     |> Repo.update()
-
   end
 
   def process_order_payment(id, payment_order) do
@@ -68,7 +113,7 @@ defmodule BookingApi.OrdersManagement do
   end
 
   def cancel_order(id) do
-    %Order{}
+    get_order(id)
     |> Order.changeset(%{status: "canceled"})
     |> Repo.update()
     # TODO: send a email for customer about order canceled

@@ -5,7 +5,6 @@ defmodule BookingApi.Stores do
 
   import Ecto.Query, warn: false
   alias BookingApi.Repo
-
   alias BookingApi.Stores.Store
 
   @doc """
@@ -28,14 +27,16 @@ defmodule BookingApi.Stores do
 
   ## Examples
 
-      iex> get_store!(123)
+      iex> get_store(123)
       %Store{}
 
-      iex> get_store!(456)
+      iex> get_store(456)
       ** (Ecto.NoResultsError)
 
   """
-  def get_store!(id), do: Repo.get!(Store, id)
+  def get_store(id) do
+    Repo.get(Store, id)
+  end
 
   @doc """
   Creates a store.
