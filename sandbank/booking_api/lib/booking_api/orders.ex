@@ -12,6 +12,8 @@ defmodule BookingApi.OrdersManagement do
   alias BookingApi.Orders.ItemsClassification
   alias BookingApi.BussinessValidationError
 
+  def get_orders_update_queue, do: "order_update"
+
   def get_store_by_id(store_id) do
     store = Stores.get_store(store_id)
     if store == nil do
@@ -24,7 +26,7 @@ defmodule BookingApi.OrdersManagement do
   def start_order(store_id) do
     store = get_store_by_id(store_id)
 
-    %Order{}
+    order = %Order{}
     |> Order.changeset(%{
       store_id: store.id,
       status: "started",
@@ -32,6 +34,9 @@ defmodule BookingApi.OrdersManagement do
       items_quantity: 0
     })
     |> Repo.insert()
+    |> publish_order_update
+
+    order
   end
 
   def get_order(id) do
@@ -60,7 +65,16 @@ defmodule BookingApi.OrdersManagement do
     classfication
   end
 
-  def process_order(id, store_id, item, customer) do
+  def publish_order_update(order) do
+    Phoenix.PubSub.broadcast(
+      BookingApi.PubSub,
+      get_orders_update_queue(),
+      {:do_background_task, order}
+    )
+    order
+  end
+
+  def process_order(id, store_id, item, customer, payment_data) do
     order = get_order(id)
     item_classification = get_item_classification_by_name(item.name)
     store = get_store_by_id(store_id)
@@ -79,29 +93,43 @@ defmodule BookingApi.OrdersManagement do
       store_id: store.id,
       items_classification_id: item_classification.id,
       total_value: payment_order.value,
-      status: "filled"
+      status: "filled",
+      items_quantity: item.quantity
     })
     |> Repo.update()
+    |> publish_order_update
+
+    Payments.send_payment_order_to_processing_queue(payment_order, payment_data)
+
+    order
   end
 
-  def process_order_payment(id, payment_order) do
-    if (payment_order.status == "approved") do
-      %Order{}
-      |> Order.changeset(%{
-        payment_order: payment_order,
-        status: "paid"
-      })
-      |> Repo.update()
-    else
-      %Order{}
-      |> Order.changeset(%{
-        payment_order: payment_order,
-        status: "error",
-        error: "Payment was not approved -> " + payment_order.error
-      })
-      |> Repo.update()
-    end
-    # TODO: send a email for customer about order payment processing result
+  def set_order_as_paid(order) do
+    order
+    |> Order.changeset(%{status: "paid"})
+    |> Repo.update()
+    |> publish_order_update
+  end
+
+  def book_order(order) do
+    order
+    |> Order.changeset(%{status: "booked"})
+    |> Repo.update()
+    |> publish_order_update
+  end
+
+  def cancel_order(order) do
+    order
+    |> Order.change_status("canceled")
+    |> Repo.update()
+    |> publish_order_update
+  end
+
+  def set_order_as_failed(order, error) do
+    order
+    |> Order.changeset(%{status: "failed", error: error})
+    |> Repo.update()
+    |> publish_order_update
   end
 
   def book_order_with_store(id) do

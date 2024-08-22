@@ -6,7 +6,10 @@ defmodule BookingApi.Payments do
   import Ecto.Query, warn: false
   alias BookingApi.Repo
   alias BookingApi.Payments.PaymentOrder
+  alias BookingApi.PaymentsProcessorWorker
   import HTTPoison
+
+  def get_payment_update_queue, do: "payment_order_update"
 
   @doc """
   Gets a single payment_order.
@@ -43,7 +46,19 @@ defmodule BookingApi.Payments do
   end
 
 
-  def process_payment_order(id) do
+  def get_pending_payments_orders do
+    Repo.all(from p in PaymentOrder, where: p.status == "pending")
+  end
+
+  def send_payment_order_to_processing_queue(payment_order, payment_data \\ nil) do
+    Phoenix.PubSub.broadcast(
+      BookingApi.PubSub,
+      get_payment_update_queue(),
+      {:do_background_task, %{ order: payment_order, payment_data: payment_data }}
+    )
+  end
+
+  def process_payment_order(id, payment_data) do
     # send order to payment api to create a payment order http://locahost:4001/api/payment_orders
     # process response from payment api
     # if payment order is approved then update payment order status to approved
@@ -51,7 +66,13 @@ defmodule BookingApi.Payments do
     # return payment order updated
 
     payment_order = get_payment_order!(id)
-    response = HTTPoison.post!("http://locahost:4001/api/payment_orders", body: payment_order)
+    payload = %{
+      credit_card: payment_data.credit_card,
+      cvv: payment_data.cvv,
+      expiration_date: payment_data.expiration_date,
+      value: payment_order.value
+    }
+    response = HTTPoison.post!("http://locahost:4001/api/payment_orders", body: payload)
 
     case response do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
@@ -83,6 +104,7 @@ defmodule BookingApi.Payments do
     payment_order
     |> PaymentOrder.changeset(attrs)
     |> Repo.update()
+    |> BookingApi.Payments.send_payment_order_to_processing_queue
   end
 
 

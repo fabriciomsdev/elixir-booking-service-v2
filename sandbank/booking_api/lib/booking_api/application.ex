@@ -17,7 +17,8 @@ defmodule BookingApi.Application do
       # Start a worker by calling: BookingApi.Worker.start_link(arg)
       # {BookingApi.Worker, arg},
       # Start to serve requests, typically the last entry
-      BookingApiWeb.Endpoint
+      BookingApiWeb.Endpoint,
+      BookingApi.PaymentsProcessorWorker,
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

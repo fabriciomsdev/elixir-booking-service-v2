@@ -17,6 +17,14 @@ defmodule BookingApi.OrdersTest do
 
     @invalid_attrs %{error: nil, status: nil, total_value: nil, items_quantity: nil}
 
+    def get_fake_payment_data() do
+      %{
+        credit_card: "1312 1234 5423 6423",
+        cvv: "123",
+        expiration_date: "12/2028"
+      }
+    end
+
     def create_customer() do
       %Customer{}
       |> Customer.changeset(%{name: "John Doe", email: "jonhdoe@gmail.com", phone: "123456789"})
@@ -56,11 +64,12 @@ defmodule BookingApi.OrdersTest do
       {:ok, store} = create_store()
       {:ok, order} = OrdersManagement.start_order(store.id)
       {:ok, item_classification} = add_a_item_classification()
+      payment_data = get_fake_payment_data()
 
       item = %{name: item_classification.name, quantity: 2}
       customer = %{name: "John Doe", email: "fabricioms.dev@gmail.com", phone: "123456789"}
 
-      assert order = OrdersManagement.process_order(order.id, store.id, item, customer)
+      assert order = OrdersManagement.process_order(order.id, store.id, item, customer, payment_data)
     end
 
     test "should return a error to a invalid order id" do
@@ -69,7 +78,8 @@ defmodule BookingApi.OrdersTest do
           "b7e08df4-97fc-4f1a-8bf6-fb0144160382",
           "b7e08df4-97fc-4f1a-8bf6-fb0144160382",
           %{name: "123", quantity: 2},
-          %{name: "John Doe", email: "fabricioms.dev#gmail.com", phone: "123456789"}
+          %{name: "John Doe", email: "fabricioms.dev#gmail.com", phone: "123456789"},
+          get_fake_payment_data()
         )
       end
     end
@@ -96,7 +106,7 @@ defmodule BookingApi.OrdersTest do
       customer = %{name: "John Doe", email: "fabricioms.dev@gmail.com", phone: "123456789"}
 
       assert_raise BussinessValidationError, "Classification of Item to store not found", fn ->
-        OrdersManagement.process_order(order.id, store.id, item, customer)
+        OrdersManagement.process_order(order.id, store.id, item, customer, get_fake_payment_data())
       end
     end
 
@@ -110,8 +120,43 @@ defmodule BookingApi.OrdersTest do
       customer = %{name: nil, email: nil, phone: nil}
 
       assert_raise MatchError, fn ->
-        OrdersManagement.process_order(order.id, store.id, item, customer)
+        OrdersManagement.process_order(order.id, store.id, item, customer, get_fake_payment_data())
       end
+    end
+
+    test "should can move a order to paid status" do
+      {:ok, store} = create_store()
+      {:ok, order} = OrdersManagement.start_order(store.id)
+      {:ok, item_classification} = add_a_item_classification()
+      payment_data = get_fake_payment_data()
+
+      item = %{name: item_classification.name, quantity: 2}
+      customer = %{name: "John Doe", email: "f@gmail.com", phone: "123456789"}
+
+      order = OrdersManagement.process_order(order.id, store.id, item, customer, payment_data)
+      OrdersManagement.set_order_as_paid(order)
+
+      assert order = OrdersManagement.get_order(order.id)
+      assert order.status == "paid"
+    end
+
+    # test -> should can move a order to booked status
+    test "should can move a order to booked status" do
+      {:ok, store} = create_store()
+      {:ok, order} = OrdersManagement.start_order(store.id)
+      {:ok, item_classification} = add_a_item_classification()
+      payment_data = get_fake_payment_data()
+
+      item = %{name: item_classification.name, quantity: 2}
+      customer = %{name: "John Doe", email: "f@gmail.com", phone: "123456789"}
+
+      order = OrdersManagement.process_order(order.id, store.id, item, customer, payment_data)
+
+      OrdersManagement.set_order_as_paid(order)
+      OrdersManagement.book_order(order)
+
+      assert order = OrdersManagement.get_order(order.id)
+      assert order.status == "booked"
     end
   end
 end
