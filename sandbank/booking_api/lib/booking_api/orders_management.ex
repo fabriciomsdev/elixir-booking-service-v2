@@ -59,7 +59,10 @@ defmodule BookingApi.OrdersManagement do
     classfication = Repo.one(from i in ItemsClassification, where: i.name == ^name)
 
     if classfication == nil do
-      raise %BussinessValidationError{message: "Classification of Item to store not found" }
+      current_classifications = Repo.all(ItemsClassification)
+      current_classifications_as_str = Enum.map(current_classifications, & &1.name)
+
+      raise %BussinessValidationError{message: "Classification of Item to store not found, available options are: #{current_classifications_as_str}" }
     end
 
     classfication
@@ -81,13 +84,13 @@ defmodule BookingApi.OrdersManagement do
 
   def process_order(id, store_id, item, customer, payment_data) do
     order = get_order(id)
-    item_classification = get_item_classification_by_name(item.name)
+    item_classification = get_item_classification_by_name(item["name"])
     store = get_store_by_id(store_id)
 
     {:ok, customer} = register_a_customer(customer)
     {:ok, payment_order} = Payments.create_payment_order(%{
       order_id: order.id,
-      value: Decimal.to_float(item_classification.value_to_store) * item.quantity,
+      value: Decimal.to_float(item_classification.value_to_store) * item["quantity"],
       status: "pending"
     })
 
@@ -99,13 +102,13 @@ defmodule BookingApi.OrdersManagement do
         items_classification_id: item_classification.id,
         total_value: payment_order.value,
         status: "filled",
-        items_quantity: item.quantity
+        items_quantity: item["quantity"]
       })
       |> Repo.update()
       |> publish_order_update
       |> ask_order_payment(payment_order, payment_data)
 
-      order
+      {:ok, order}
   end
 
   def set_order_as_paid(order) do

@@ -4,7 +4,11 @@ defmodule BookingApiWeb.OrdersViews do
   end
 
   def render("update.json", %{order: order}) do
-    %{id: order.id, status: order.status, total_value: order.total_value }
+    %{
+      id: order.id,
+      status: order.status,
+      total_value: Decimal.to_float(order.total_value)
+    }
   end
 
   def render("delete.json", %{order: order}) do
