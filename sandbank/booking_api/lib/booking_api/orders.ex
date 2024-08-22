@@ -74,6 +74,11 @@ defmodule BookingApi.OrdersManagement do
     order
   end
 
+  def ask_order_payment(order, payment_order, payment_data) do
+    Payments.send_payment_order_to_processing_queue(payment_order, payment_data)
+    order
+  end
+
   def process_order(id, store_id, item, customer, payment_data) do
     order = get_order(id)
     item_classification = get_item_classification_by_name(item.name)
@@ -87,21 +92,20 @@ defmodule BookingApi.OrdersManagement do
     })
 
     order
-    |> Order.changeset(%{
-      customer_id: customer.id,
-      payment_order_id: payment_order.id,
-      store_id: store.id,
-      items_classification_id: item_classification.id,
-      total_value: payment_order.value,
-      status: "filled",
-      items_quantity: item.quantity
-    })
-    |> Repo.update()
-    |> publish_order_update
+      |> Order.changeset(%{
+        customer_id: customer.id,
+        payment_order_id: payment_order.id,
+        store_id: store.id,
+        items_classification_id: item_classification.id,
+        total_value: payment_order.value,
+        status: "filled",
+        items_quantity: item.quantity
+      })
+      |> Repo.update()
+      |> publish_order_update
+      |> ask_order_payment(payment_order, payment_data)
 
-    Payments.send_payment_order_to_processing_queue(payment_order, payment_data)
-
-    order
+      order
   end
 
   def set_order_as_paid(order) do
