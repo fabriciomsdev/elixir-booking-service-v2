@@ -19,6 +19,7 @@ defmodule BookingApi.Application do
       # Start to serve requests, typically the last entry
       BookingApiWeb.Endpoint,
       BookingApi.PaymentsProcessorWorker,
+      BookingApi.OrdersUpdateProcessorWorker
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
