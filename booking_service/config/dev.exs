@@ -1,7 +1,7 @@
 import Config
 
 # Configure your database
-config :booking_api, BookingApi.Repo,
+config :booking_service, BookingService.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
@@ -17,7 +17,7 @@ config :booking_api, BookingApi.Repo,
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :booking_api, BookingApiWeb.Endpoint,
+config :booking_service, BookingServiceWeb.Endpoint,
   # Binding to loopback ipv4 address prevents access from other machines.
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
   http: [ip: {127, 0, 0, 1}, port: 4000],
@@ -26,8 +26,8 @@ config :booking_api, BookingApiWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "Jno4X1ZCcBvvZOfte+agf7rHTBQ3YPOQNrxcNeQsUbt0AcCJ4LdxpBHtg0iSp4FZ",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:booking_api, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:booking_api, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:booking_service, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:booking_service, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -54,7 +54,7 @@ config :booking_api, BookingApiWeb.Endpoint,
 # different ports.
 
 # Enable dev routes for dashboard and mailbox
-config :booking_api, dev_routes: true
+config :booking_service, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
@@ -70,4 +70,4 @@ config :phoenix, :plug_init_mode, :runtime
 config :swoosh, :api_client, false
 
 # add a custom config from env VAR PAYMENT_SERVICE_URL
-config :booking_api, payment_service_url: System.get_env("PAYMENT_SERVICE_URL", "http://localhost:3001/api/payment-orders")
+config :booking_service, payment_service_url: System.get_env("PAYMENT_SERVICE_URL", "http://localhost:3001/api/payment-orders")

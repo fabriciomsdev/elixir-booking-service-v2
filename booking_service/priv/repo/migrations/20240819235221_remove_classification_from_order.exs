@@ -1,4 +1,4 @@
-defmodule BookingApi.Repo.Migrations.RemoveClassificationFromOrder do
+defmodule BookingService.Repo.Migrations.RemoveClassificationFromOrder do
   use Ecto.Migration
 
   def change do

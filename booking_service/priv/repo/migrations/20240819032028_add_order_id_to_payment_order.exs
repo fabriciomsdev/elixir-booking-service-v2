@@ -1,4 +1,4 @@
-defmodule BookingApi.Repo.Migrations.AddOrderIdToPaymentOrder do
+defmodule BookingService.Repo.Migrations.AddOrderIdToPaymentOrder do
   use Ecto.Migration
 
   def change do

@@ -1,18 +1,18 @@
-defmodule BookingApi.OrdersTest do
-  use BookingApi.DataCase
-  alias BookingApi.Orders
-  alias BookingApi.OrdersManagement
-  alias BookingApi.Orders.Customer
-  alias BookingApi.Stores.Store
-  alias BookingApi.Orders.ItemsClassification
-  alias BookingApi.BussinessValidationError
-  alias BookingApi.Orders.OrderItem
+defmodule BookingService.OrdersTest do
+  use BookingService.DataCase
+  alias BookingService.Orders
+  alias BookingService.OrdersManagement
+  alias BookingService.Orders.Customer
+  alias BookingService.Stores.Store
+  alias BookingService.Orders.ItemsClassification
+  alias BookingService.BussinessValidationError
+  alias BookingService.Orders.OrderItem
   use ExUnit.Case, async: true
 
   describe "orders management" do
-    alias BookingApi.OrdersManagement
+    alias BookingService.OrdersManagement
 
-    import BookingApi.OrdersFixtures
+    import BookingService.OrdersFixtures
 
     @invalid_attrs %{error: nil, status: nil, total_value: nil, quantity: nil}
 
@@ -179,9 +179,9 @@ defmodule BookingApi.OrdersTest do
   end
 
   describe "orders_items" do
-    alias BookingApi.Orders.OrderItem
+    alias BookingService.Orders.OrderItem
 
-    import BookingApi.OrdersFixtures
+    import BookingService.OrdersFixtures
 
     @invalid_attrs %{total_value: nil, quantity: nil}
 

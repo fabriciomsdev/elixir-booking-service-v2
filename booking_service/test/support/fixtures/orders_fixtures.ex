@@ -1,7 +1,7 @@
-defmodule BookingApi.OrdersFixtures do
+defmodule BookingService.OrdersFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `BookingApi.Orders` context.
+  entities via the `BookingService.Orders` context.
   """
 
   @doc """
@@ -15,7 +15,7 @@ defmodule BookingApi.OrdersFixtures do
         name: "some name",
         phone: "some phone"
       })
-      |> BookingApi.Orders.create_customer()
+      |> BookingService.Orders.create_customer()
 
     customer
   end
@@ -29,7 +29,7 @@ defmodule BookingApi.OrdersFixtures do
       |> Enum.into(%{
         name: "some name"
       })
-      |> BookingApi.Orders.create_items_classification()
+      |> BookingService.Orders.create_items_classification()
 
     items_classification
   end
@@ -46,7 +46,7 @@ defmodule BookingApi.OrdersFixtures do
         status: "some status",
         total_value: "120.5"
       })
-      |> BookingApi.Orders.start_order()
+      |> BookingService.Orders.start_order()
 
     order
   end
@@ -61,7 +61,7 @@ defmodule BookingApi.OrdersFixtures do
         quantity: 42,
         total_value: "120.5"
       })
-      |> BookingApi.Orders.create_order_item()
+      |> BookingService.Orders.create_order_item()
 
     order_item
   end

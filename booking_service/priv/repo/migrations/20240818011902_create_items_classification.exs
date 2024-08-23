@@ -1,4 +1,4 @@
-defmodule BookingApi.Repo.Migrations.CreateItemsClassification do
+defmodule BookingService.Repo.Migrations.CreateItemsClassification do
   use Ecto.Migration
 
   def change do

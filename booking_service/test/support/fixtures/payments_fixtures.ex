@@ -1,7 +1,7 @@
-defmodule BookingApi.PaymentsFixtures do
+defmodule BookingService.PaymentsFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `BookingApi.Payments` context.
+  entities via the `BookingService.Payments` context.
   """
 
   @doc """
@@ -14,7 +14,7 @@ defmodule BookingApi.PaymentsFixtures do
         status: "some status",
         value: "120.5"
       })
-      |> BookingApi.Payments.create_payment_order()
+      |> BookingService.Payments.create_payment_order()
 
     payment_order
   end

@@ -1,9 +1,9 @@
-defmodule BookingApi.MixProject do
+defmodule BookingService.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :booking_api,
+      app: :booking_service,
       version: "0.1.0",
       elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -18,7 +18,7 @@ defmodule BookingApi.MixProject do
   # Type `mix help compile.app` for more information.
   def application do
     [
-      mod: {BookingApi.Application, []},
+      mod: {BookingService.Application, []},
       extra_applications: [:logger, :runtime_tools]
     ]
   end
@@ -71,10 +71,10 @@ defmodule BookingApi.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["tailwind booking_api", "esbuild booking_api"],
+      "assets.build": ["tailwind booking_service", "esbuild booking_service"],
       "assets.deploy": [
-        "tailwind booking_api --minify",
-        "esbuild booking_api --minify",
+        "tailwind booking_service --minify",
+        "esbuild booking_service --minify",
         "phx.digest"
       ]
     ]

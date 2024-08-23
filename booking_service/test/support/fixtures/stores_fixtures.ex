@@ -1,7 +1,7 @@
-defmodule BookingApi.StoresFixtures do
+defmodule BookingService.StoresFixtures do
   @moduledoc """
   This module defines test helpers for creating
-  entities via the `BookingApi.Stores` context.
+  entities via the `BookingService.Stores` context.
   """
 
   @doc """
@@ -14,7 +14,7 @@ defmodule BookingApi.StoresFixtures do
         address: "some address",
         name: "some name"
       })
-      |> BookingApi.Stores.create_store()
+      |> BookingService.Stores.create_store()
 
     store
   end

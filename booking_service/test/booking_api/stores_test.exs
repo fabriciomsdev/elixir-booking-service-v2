@@ -1,12 +1,12 @@
-# defmodule BookingApi.StoresTest do
-#   use BookingApi.DataCase
+# defmodule BookingService.StoresTest do
+#   use BookingService.DataCase
 
-#   alias BookingApi.Stores
+#   alias BookingService.Stores
 
 #   describe "stores" do
-#     alias BookingApi.Stores.Store
+#     alias BookingService.Stores.Store
 
-#     import BookingApi.StoresFixtures
+#     import BookingService.StoresFixtures
 
 #     @invalid_attrs %{name: nil, address: nil}
 

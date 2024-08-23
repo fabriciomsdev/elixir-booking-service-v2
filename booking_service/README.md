@@ -1,4 +1,4 @@
-# BookingApi
+# BookingService
 
 To start your Phoenix server:
 

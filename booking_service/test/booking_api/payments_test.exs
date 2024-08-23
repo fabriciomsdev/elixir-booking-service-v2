@@ -1,12 +1,12 @@
-# defmodule BookingApi.PaymentsTest do
-#   use BookingApi.DataCase
+# defmodule BookingService.PaymentsTest do
+#   use BookingService.DataCase
 
-#   alias BookingApi.Payments
+#   alias BookingService.Payments
 
 #   describe "payment_orders" do
-#     alias BookingApi.Payments.PaymentOrder
+#     alias BookingService.Payments.PaymentOrder
 
-#     import BookingApi.PaymentsFixtures
+#     import BookingService.PaymentsFixtures
 
 #     @invalid_attrs %{status: nil, value: nil}
 
