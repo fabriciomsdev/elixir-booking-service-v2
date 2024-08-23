@@ -7,7 +7,7 @@ defmodule BookingServiceWeb.OrdersController do
     opts
   end
 
-  def new(conn, %{"user_id" => user_id, "store_id" => store_id}) do
+  def new(conn, %{"store_id" => store_id}) do
     case OrdersManagement.start_order(store_id) do
       {:ok, order} ->
         conn
