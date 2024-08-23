@@ -3,19 +3,18 @@ defmodule BookingApi.OrdersTest do
   alias BookingApi.Orders
   alias BookingApi.OrdersManagement
   alias BookingApi.Orders.Customer
-  alias BookingApi.Orders.Order
   alias BookingApi.Stores.Store
-  alias BookingApi.Payment.PaymentOrder
   alias BookingApi.Orders.ItemsClassification
   alias BookingApi.BussinessValidationError
+  alias BookingApi.Orders.OrderItem
+  use ExUnit.Case, async: true
 
-
-  describe "orders" do
+  describe "orders management" do
     alias BookingApi.OrdersManagement
 
     import BookingApi.OrdersFixtures
 
-    @invalid_attrs %{error: nil, status: nil, total_value: nil, items_quantity: nil}
+    @invalid_attrs %{error: nil, status: nil, total_value: nil, quantity: nil}
 
     def get_fake_payment_data() do
       %{
@@ -43,6 +42,23 @@ defmodule BookingApi.OrdersTest do
       |> Repo.insert()
     end
 
+    def get_test_customer_data() do
+      %{
+        name: "John Doe",
+        email: "fabricioms.dev@gmail.com",
+        phone: "123456789"
+      }
+    end
+
+    def get_test_order_items_data() do
+      [
+        %{
+          name: "Bags Storage",
+          quantity: 2
+        }
+      ]
+    end
+
     test "start a order" do
       {:ok, store} = create_store()
 
@@ -63,13 +79,12 @@ defmodule BookingApi.OrdersTest do
     test "fill a order with necessary data to process" do
       {:ok, store} = create_store()
       {:ok, order} = OrdersManagement.start_order(store.id)
-      {:ok, item_classification} = add_a_item_classification()
+
       payment_data = get_fake_payment_data()
+      items = get_test_order_items_data()
+      customer = get_test_customer_data()
 
-      item = %{name: item_classification.name, quantity: 2}
-      customer = %{name: "John Doe", email: "fabricioms.dev@gmail.com", phone: "123456789"}
-
-      assert order = OrdersManagement.process_order(order.id, store.id, item, customer, payment_data)
+      assert order = OrdersManagement.process_order(order.id, store.id, items, customer, payment_data)
     end
 
     test "should return a error to a invalid order id" do
@@ -77,8 +92,8 @@ defmodule BookingApi.OrdersTest do
         OrdersManagement.process_order(
           "b7e08df4-97fc-4f1a-8bf6-fb0144160382",
           "b7e08df4-97fc-4f1a-8bf6-fb0144160382",
-          %{name: "123", quantity: 2},
-          %{name: "John Doe", email: "fabricioms.dev#gmail.com", phone: "123456789"},
+          get_test_order_items_data(),
+          get_test_customer_data(),
           get_fake_payment_data()
         )
       end
@@ -102,11 +117,16 @@ defmodule BookingApi.OrdersTest do
       {:ok, store} = create_store()
       {:ok, order} = OrdersManagement.start_order(store.id)
 
-      item = %{name: "123", quantity: 2}
-      customer = %{name: "John Doe", email: "fabricioms.dev@gmail.com", phone: "123456789"}
+      items = [
+        %{
+          name: "--",
+          quantity: 2
+        }
+      ]
+      customer = get_test_customer_data()
 
       assert_raise BussinessValidationError, "Classification of Item to store not found", fn ->
-        OrdersManagement.process_order(order.id, store.id, item, customer, get_fake_payment_data())
+        OrdersManagement.process_order(order.id, store.id, items, customer, get_fake_payment_data())
       end
     end
 
@@ -114,26 +134,25 @@ defmodule BookingApi.OrdersTest do
     test "if dont have right customer data (email, name, phone) should return exception with 'customer data is invalid'" do
       {:ok, store} = create_store()
       {:ok, order} = OrdersManagement.start_order(store.id)
-      {:ok, item_classification} = add_a_item_classification()
 
-      item = %{name: item_classification.name, quantity: 2}
+      items = get_test_order_items_data()
       customer = %{name: nil, email: nil, phone: nil}
+      payment = get_fake_payment_data()
 
       assert_raise MatchError, fn ->
-        OrdersManagement.process_order(order.id, store.id, item, customer, get_fake_payment_data())
+        OrdersManagement.process_order(order.id, store.id, items, customer, payment)
       end
     end
 
     test "should can move a order to paid status" do
       {:ok, store} = create_store()
       {:ok, order} = OrdersManagement.start_order(store.id)
-      {:ok, item_classification} = add_a_item_classification()
+
       payment_data = get_fake_payment_data()
+      items = get_test_order_items_data()
+      customer = get_test_customer_data()
 
-      item = %{name: item_classification.name, quantity: 2}
-      customer = %{name: "John Doe", email: "f@gmail.com", phone: "123456789"}
-
-      order = OrdersManagement.process_order(order.id, store.id, item, customer, payment_data)
+      {:ok, order} = OrdersManagement.process_order(order.id, store.id, items, customer, payment_data)
       OrdersManagement.set_order_as_paid(order)
 
       assert order = OrdersManagement.get_order(order.id)
@@ -144,19 +163,74 @@ defmodule BookingApi.OrdersTest do
     test "should can move a order to booked status" do
       {:ok, store} = create_store()
       {:ok, order} = OrdersManagement.start_order(store.id)
-      {:ok, item_classification} = add_a_item_classification()
+
       payment_data = get_fake_payment_data()
+      items = get_test_order_items_data()
+      customer = get_test_customer_data()
 
-      item = %{name: item_classification.name, quantity: 2}
-      customer = %{name: "John Doe", email: "f@gmail.com", phone: "123456789"}
-
-      order = OrdersManagement.process_order(order.id, store.id, item, customer, payment_data)
+      {:ok, order} = OrdersManagement.process_order(order.id, store.id, items, customer, payment_data)
 
       OrdersManagement.set_order_as_paid(order)
       OrdersManagement.book_order(order)
 
       assert order = OrdersManagement.get_order(order.id)
       assert order.status == "booked"
+    end
+  end
+
+  describe "orders_items" do
+    alias BookingApi.Orders.OrderItem
+
+    import BookingApi.OrdersFixtures
+
+    @invalid_attrs %{total_value: nil, quantity: nil}
+
+    test "list_orders_items/0 returns all orders_items" do
+      order_item = order_item_fixture()
+      assert Orders.list_orders_items() == [order_item]
+    end
+
+    test "get_order_item!/1 returns the order_item with given id" do
+      order_item = order_item_fixture()
+      assert Orders.get_order_item!(order_item.id) == order_item
+    end
+
+    test "create_order_item/1 with valid data creates a order_item" do
+      valid_attrs = %{total_value: "120.5", quantity: 42}
+
+      assert {:ok, %OrderItem{} = order_item} = Orders.create_order_item(valid_attrs)
+      assert order_item.total_value == Decimal.new("120.5")
+      assert order_item.quantity == 42
+    end
+
+    test "create_order_item/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Orders.create_order_item(@invalid_attrs)
+    end
+
+    test "update_order_item/2 with valid data updates the order_item" do
+      order_item = order_item_fixture()
+      update_attrs = %{total_value: "456.7", quantity: 43}
+
+      assert {:ok, %OrderItem{} = order_item} = Orders.update_order_item(order_item, update_attrs)
+      assert order_item.total_value == Decimal.new("456.7")
+      assert order_item.quantity == 43
+    end
+
+    test "update_order_item/2 with invalid data returns error changeset" do
+      order_item = order_item_fixture()
+      assert {:error, %Ecto.Changeset{}} = Orders.update_order_item(order_item, @invalid_attrs)
+      assert order_item == Orders.get_order_item!(order_item.id)
+    end
+
+    test "delete_order_item/1 deletes the order_item" do
+      order_item = order_item_fixture()
+      assert {:ok, %OrderItem{}} = Orders.delete_order_item(order_item)
+      assert_raise Ecto.NoResultsError, fn -> Orders.get_order_item!(order_item.id) end
+    end
+
+    test "change_order_item/1 returns a order_item changeset" do
+      order_item = order_item_fixture()
+      assert %Ecto.Changeset{} = Orders.change_order_item(order_item)
     end
   end
 end

@@ -50,4 +50,19 @@ defmodule BookingApi.OrdersFixtures do
 
     order
   end
+
+  @doc """
+  Generate a order_item.
+  """
+  def order_item_fixture(attrs \\ %{}) do
+    {:ok, order_item} =
+      attrs
+      |> Enum.into(%{
+        quantity: 42,
+        total_value: "120.5"
+      })
+      |> BookingApi.Orders.create_order_item()
+
+    order_item
+  end
 end

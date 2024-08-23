@@ -8,11 +8,10 @@ defmodule BookingApi.Orders.Order do
     field :error, :string
     field :status, :string
     field :total_value, :decimal
-    field :items_quantity, :integer
     field :customer_id, :binary_id
     field :store_id, :binary_id
     field :payment_order_id, :binary_id
-    field :items_classification_id, :binary_id
+    has_many :items, BookingApi.Orders.OrderItem
 
     timestamps(type: :utc_datetime)
   end
@@ -28,21 +27,31 @@ defmodule BookingApi.Orders.Order do
     ]
   end
 
-
-
   @doc false
   def changeset(order, attrs) do
     order
-    |> cast(attrs, [:total_value, :status, :items_quantity, :error])
-    |> validate_required([:total_value, :status, :items_quantity])
+    |> cast(attrs, [
+      :customer_id,
+      :store_id,
+      :payment_order_id,
+      :total_value,
+      :status,
+    ])
+    |> validate_required([:status,:total_value])
     |> put_change(:status, String.downcase(attrs.status))
     |> put_change(:status, String.trim(attrs.status))
     |> validate_inclusion(:status, valid_status_list())
   end
 
-  def change_status(order, status) do
+  def status_changeset(order, attrs) do
     order
-    |> put_change(:status, String.downcase(status))
-    |> validate_inclusion(:status, valid_status_list())
+    |> cast(attrs, [:status])
+    |> validate_inclusion(:status, ["pending", "completed", "canceled"])
+  end
+
+  def value_changeset(order, attrs) do
+    order
+    |> cast(attrs, [:total_value])
+    |> validate_number(:total_value, greater_than: 0)
   end
 end

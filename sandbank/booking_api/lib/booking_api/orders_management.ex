@@ -4,11 +4,13 @@ defmodule BookingApi.OrdersManagement do
   """
 
   import Ecto.Query, warn: false
+  require Logger
   alias BookingApi.Repo
   alias BookingApi.Orders.Customer
   alias BookingApi.Orders.Order
   alias BookingApi.Payments
   alias BookingApi.Stores
+  alias BookingApi.Orders.OrderItem
   alias BookingApi.Orders.ItemsClassification
   alias BookingApi.BussinessValidationError
 
@@ -31,7 +33,6 @@ defmodule BookingApi.OrdersManagement do
       store_id: store.id,
       status: "started",
       total_value: 0.0,
-      items_quantity: 0
     })
     |> Repo.insert()
     |> publish_order_update
@@ -56,13 +57,17 @@ defmodule BookingApi.OrdersManagement do
   end
 
   def get_item_classification_by_name(name) do
+    if name == nil do
+      raise %BussinessValidationError{message: "You need to inform the name of the item to store"}
+    end
+
     classfication = Repo.one(from i in ItemsClassification, where: i.name == ^name)
 
     if classfication == nil do
       current_classifications = Repo.all(ItemsClassification)
       current_classifications_as_str = Enum.map(current_classifications, & &1.name)
 
-      raise %BussinessValidationError{message: "Classification of Item to store not found, available options are: #{current_classifications_as_str}" }
+      raise %BussinessValidationError{message: "Classification of Item to store not found" }
     end
 
     classfication
@@ -77,38 +82,93 @@ defmodule BookingApi.OrdersManagement do
     order
   end
 
-  def ask_order_payment(order, payment_order, payment_data) do
+  def ask_order_payment(payment_order, payment_data) do
     Payments.send_payment_order_to_processing_queue(payment_order, payment_data)
+  end
+
+  def validate_current_order_status(%{"status" => current_status}, status) do
+    sucess_flow = [
+      "started",
+      "filled",
+      "paid",
+      "booked",
+    ]
+
+    if current_status == "booked" do
+      raise %BussinessValidationError{message: "Order already booked"}
+    end
+
+    if current_status == "canceled" do
+      raise %BussinessValidationError{message: "Order already canceled, you need to open a new order"}
+    end
+  end
+
+  def save_items_of_order(order, items) do
+    for %{"name" => name, "quantity" => quantity} <- items do
+      # TODO: optmize doing only one query to get all items classification
+      item_classification = get_item_classification_by_name(name)
+      Repo.insert(%OrderItem{
+        order_id: order.id,
+        classification_id: item_classification.id,
+        quantity: quantity,
+        total_value: Decimal.to_float(item_classification.value_to_store) * quantity,
+      })
+    end
+
     order
   end
 
-  def process_order(id, store_id, item, customer, payment_data) do
-    order = get_order(id)
-    item_classification = get_item_classification_by_name(item["name"])
-    store = get_store_by_id(store_id)
+  def calculate_costs(order, items) do
+    order_items = []
+    total_order_value = Enum.reduce(items, 0.0, fn %{"name" => name, "quantity" => quantity}, acc ->
+      item_classification = get_item_classification_by_name(name)
+      item_value = Decimal.to_float(item_classification.value_to_store) * quantity
+      acc + item_value
+    end)
+    Logger.info("Total order value: #{total_order_value}")
 
-    {:ok, customer} = register_a_customer(customer)
+    order
+    |> Order.value_changeset(%{
+      total_value: total_order_value
+    })
+  end
+
+  def create_payment_order(order) do
     {:ok, payment_order} = Payments.create_payment_order(%{
       order_id: order.id,
-      value: Decimal.to_float(item_classification.value_to_store) * item["quantity"],
+      value: order.total_value,
       status: "pending"
     })
 
-    order
+    payment_order
+  end
+
+  def process_order(id, store_id, items, customer, payment_data) do
+    order = get_order(id)
+    store = get_store_by_id(store_id)
+    next_status = "filled"
+
+    {:ok, customer} = register_a_customer(customer)
+
+    {:ok, order} = order
       |> Order.changeset(%{
         customer_id: customer.id,
-        payment_order_id: payment_order.id,
         store_id: store.id,
-        items_classification_id: item_classification.id,
-        total_value: payment_order.value,
-        status: "filled",
-        items_quantity: item["quantity"]
+        status: next_status,
       })
-      |> Repo.update()
-      |> publish_order_update
-      |> ask_order_payment(payment_order, payment_data)
+      |> calculate_costs(items)
+      |> Repo.update
 
-      {:ok, order}
+      order = order
+      |> save_items_of_order(items)
+      |> publish_order_update
+
+      payment_order = order
+      |> create_payment_order
+      |> ask_order_payment(payment_data)
+      Logger.info("Order #{order.id} processed with success")
+      Logger.info(get_order(order.id))
+      {:ok, get_order(order.id)}
   end
 
   def set_order_as_paid(order) do
