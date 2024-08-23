@@ -61,10 +61,10 @@ defmodule BookingService.OrdersManagement do
       raise %BussinessValidationError{message: "You need to inform the name of the item to store"}
     end
 
-    classfication = Repo.one(from i in ItemsClassification, where: i.name == ^name)
+    classfication = Repo.one(from i in Classification, where: i.name == ^name)
 
     if classfication == nil do
-      current_classifications = Repo.all(ItemsClassification)
+      current_classifications = Repo.all(Classification)
       current_classifications_as_str = Enum.map(current_classifications, & &1.name)
 
       raise %BussinessValidationError{message: "Classification of Item to store not found" }
