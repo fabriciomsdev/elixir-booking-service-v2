@@ -22,14 +22,6 @@ config :booking_service, BookingServiceWeb.Endpoint,
   pubsub_server: BookingService.PubSub,
   live_view: [signing_salt: "z6BBtcDi"]
 
-# Configures the mailer
-#
-# By default it uses the "Local" adapter which stores the emails
-# locally. You can see the emails in your browser, at "/dev/mailbox".
-#
-# For production it's recommended to configure a different adapter
-# at the `config/runtime.exs`.
-config :booking_service, BookingService.Mailer, adapter: Swoosh.Adapters.Local
 
 # Configure esbuild (the version is required)
 config :esbuild,

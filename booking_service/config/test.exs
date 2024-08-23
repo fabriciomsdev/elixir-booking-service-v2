@@ -20,9 +20,6 @@ config :booking_service, BookingServiceWeb.Endpoint,
   secret_key_base: "nIzs95j6HoWR6jqHszF9ljnDFTibhfNhPrbxyE/Gn9khl7AqSpiuqTULBuQc33eo",
   server: false
 
-# In test we don't send emails
-config :booking_service, BookingService.Mailer, adapter: Swoosh.Adapters.Test
-
 # Disable swoosh api client as it is only required for production adapters
 config :swoosh, :api_client, false
 
