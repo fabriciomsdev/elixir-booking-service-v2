@@ -6,7 +6,5 @@ defmodule BookingApi.Repo.Migrations.AddClassificationOnOrderItem do
     alter table(:orders_items) do
       add :classification_id, :binary_id
     end
-
-    rename table(:orders_items), :quantity, to: :quantity
   end
 end

@@ -6,7 +6,6 @@ defmodule BookingApi.Repo.Migrations.CreateOrders do
       add :id, :binary_id, primary_key: true
       add :total_value, :decimal
       add :status, :string
-      add :quantity, :integer
       add :error, :string
       add :customer_id, references(:customers, on_delete: :nothing, type: :binary_id)
       add :store_id, references(:stores, on_delete: :nothing, type: :binary_id)
