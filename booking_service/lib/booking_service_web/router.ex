@@ -2,6 +2,12 @@ defmodule BookingServiceWeb.Router do
   use BookingServiceWeb, :router
 
   pipeline :api do
+    plug Corsica,
+      origins: "*",
+      allow_headers: ~w(content-type authorization accept origin),
+      allow_methods: ~w(GET POST PUT DELETE OPTIONS),
+      max_age: 0,
+      allow_credentials: false
     plug :accepts, ["json"]
   end
 
@@ -14,6 +20,7 @@ defmodule BookingServiceWeb.Router do
     get "/orders/:id", OrdersController, :find
 
     get "/classifications", ItemsClassificationController, :list
+    match :options, "/*path", BookingServiceWeb.CORSController, :options
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development
