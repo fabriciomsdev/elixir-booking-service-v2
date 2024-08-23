@@ -4,7 +4,7 @@ defmodule BookingService.OrdersTest do
   alias BookingService.OrdersManagement
   alias BookingService.Orders.Customer
   alias BookingService.Stores.Store
-  alias BookingService.Orders.ItemsClassification
+  alias BookingService.Items.Classification
   alias BookingService.BussinessValidationError
   alias BookingService.Orders.OrderItem
   use ExUnit.Case, async: true
@@ -175,62 +175,6 @@ defmodule BookingService.OrdersTest do
 
       assert order = OrdersManagement.get_order(order.id)
       assert order.status == "booked"
-    end
-  end
-
-  describe "orders_items" do
-    alias BookingService.Orders.OrderItem
-
-    import BookingService.OrdersFixtures
-
-    @invalid_attrs %{total_value: nil, quantity: nil}
-
-    test "list_orders_items/0 returns all orders_items" do
-      order_item = order_item_fixture()
-      assert Orders.list_orders_items() == [order_item]
-    end
-
-    test "get_order_item!/1 returns the order_item with given id" do
-      order_item = order_item_fixture()
-      assert Orders.get_order_item!(order_item.id) == order_item
-    end
-
-    test "create_order_item/1 with valid data creates a order_item" do
-      valid_attrs = %{total_value: "120.5", quantity: 42}
-
-      assert {:ok, %OrderItem{} = order_item} = Orders.create_order_item(valid_attrs)
-      assert order_item.total_value == Decimal.new("120.5")
-      assert order_item.quantity == 42
-    end
-
-    test "create_order_item/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Orders.create_order_item(@invalid_attrs)
-    end
-
-    test "update_order_item/2 with valid data updates the order_item" do
-      order_item = order_item_fixture()
-      update_attrs = %{total_value: "456.7", quantity: 43}
-
-      assert {:ok, %OrderItem{} = order_item} = Orders.update_order_item(order_item, update_attrs)
-      assert order_item.total_value == Decimal.new("456.7")
-      assert order_item.quantity == 43
-    end
-
-    test "update_order_item/2 with invalid data returns error changeset" do
-      order_item = order_item_fixture()
-      assert {:error, %Ecto.Changeset{}} = Orders.update_order_item(order_item, @invalid_attrs)
-      assert order_item == Orders.get_order_item!(order_item.id)
-    end
-
-    test "delete_order_item/1 deletes the order_item" do
-      order_item = order_item_fixture()
-      assert {:ok, %OrderItem{}} = Orders.delete_order_item(order_item)
-      assert_raise Ecto.NoResultsError, fn -> Orders.get_order_item!(order_item.id) end
-    end
-
-    test "change_order_item/1 returns a order_item changeset" do
-      order_item = order_item_fixture()
-      assert %Ecto.Changeset{} = Orders.change_order_item(order_item)
     end
   end
 end
