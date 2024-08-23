@@ -1,4 +1,4 @@
-defmodule BookingService.Orders.ItemsClassification do
+defmodule BookingService.Items.Classification do
   use Ecto.Schema
   import Ecto.Changeset
 

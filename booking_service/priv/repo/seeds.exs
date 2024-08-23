@@ -25,15 +25,15 @@ if exist_store == nil do
 end
 
 classifications = [
-  %BookingService.Orders.ItemsClassification{
+  %BookingService.Items.Classification{
     name: "Bags Storage",
     value_to_store: 10.0
   },
-  %BookingService.Orders.ItemsClassification{
+  %BookingService.Items.Classification{
     name: "Boxes Storage - Business Logistics",
     value_to_store: 20.0
   },
-  %BookingService.Orders.ItemsClassification{
+  %BookingService.Items.Classification{
     name: "Large Items Storage - Business Logistics",
     value_to_store: 30.0
   }

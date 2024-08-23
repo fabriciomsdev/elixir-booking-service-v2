@@ -11,7 +11,7 @@ defmodule BookingService.OrdersManagement do
   alias BookingService.Payments
   alias BookingService.Stores
   alias BookingService.Orders.OrderItem
-  alias BookingService.Orders.ItemsClassification
+  alias BookingService.Items.Classification
   alias BookingService.BussinessValidationError
 
   def get_orders_update_queue, do: "order_update"
