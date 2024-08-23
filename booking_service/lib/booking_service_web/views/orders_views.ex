@@ -16,6 +16,7 @@ defmodule BookingServiceWeb.OrdersViews do
       id: order.id,
       status: order.status,
       total_value: Decimal.to_float(order.total_value),
+      error: order.error
     }
   end
 

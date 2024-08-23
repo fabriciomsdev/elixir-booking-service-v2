@@ -36,6 +36,7 @@ defmodule BookingService.Orders.Order do
       :payment_order_id,
       :total_value,
       :status,
+      :error
     ])
     |> validate_required([:status,:total_value])
     |> put_change(:status, String.downcase(attrs.status))
