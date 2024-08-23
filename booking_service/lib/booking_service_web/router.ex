@@ -11,6 +11,7 @@ defmodule BookingServiceWeb.Router do
     post "/orders", OrdersController, :new
     put "/orders/:id", OrdersController, :update
     delete "/orders/:id", OrdersController, :delete
+    get "/orders/:id", OrdersController, :find
 
     get "/classifications", ItemsClassificationController, :list
   end

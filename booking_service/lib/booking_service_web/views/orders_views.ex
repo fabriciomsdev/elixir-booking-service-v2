@@ -11,6 +11,14 @@ defmodule BookingServiceWeb.OrdersViews do
     }
   end
 
+  def render("order.json", %{order: order}) do
+    %{
+      id: order.id,
+      status: order.status,
+      total_value: Decimal.to_float(order.total_value),
+    }
+  end
+
   def render("delete.json", %{order: order}) do
     %{id: order.id, status: order.status }
   end
