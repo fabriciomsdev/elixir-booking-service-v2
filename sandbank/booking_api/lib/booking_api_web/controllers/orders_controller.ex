@@ -22,8 +22,8 @@ defmodule BookingApiWeb.OrdersController do
     end
   end
 
-  def update(conn, %{"id" => id, "store" => %{ "id" => store_id }, "item" => item, "customer" => customer, "payment_order" => payment_order}) do
-    case BookingApi.OrdersManagement.process_order(id, store_id, item, customer, payment_order) do
+  def update(conn, %{"id" => id, "store" => %{ "id" => store_id }, "items" => items, "customer" => customer, "payment_order" => payment_order}) do
+    case BookingApi.OrdersManagement.process_order(id, store_id, items, customer, payment_order) do
       {:ok, order} ->
         conn
         |> put_status(:ok)

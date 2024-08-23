@@ -46,7 +46,7 @@ defmodule BookingApi.Orders.Order do
   def status_changeset(order, attrs) do
     order
     |> cast(attrs, [:status])
-    |> validate_inclusion(:status, ["pending", "completed", "canceled"])
+    |> validate_inclusion(:status, valid_status_list())
   end
 
   def value_changeset(order, attrs) do

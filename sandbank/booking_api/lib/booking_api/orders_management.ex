@@ -79,6 +79,7 @@ defmodule BookingApi.OrdersManagement do
       get_orders_update_queue(),
       {:do_background_task, order}
     )
+
     order
   end
 
@@ -166,23 +167,23 @@ defmodule BookingApi.OrdersManagement do
       payment_order = order
       |> create_payment_order
       |> ask_order_payment(payment_data)
-      Logger.info("Order #{order.id} processed with success")
-      Logger.info(get_order(order.id))
+
       {:ok, get_order(order.id)}
   end
 
   def set_order_as_paid(order) do
-    order
-    |> Order.changeset(%{status: "paid"})
+    {:ok, order} = order
+    |> Order.status_changeset(%{status: "paid"})
     |> Repo.update()
-    |> publish_order_update
+
+    publish_order_update(order)
   end
 
   def book_order(order) do
-    order
-    |> Order.changeset(%{status: "booked"})
+    {:ok, order} = order
+    |> Order.status_changeset(%{status: "booked"})
     |> Repo.update()
-    |> publish_order_update
+    publish_order_update(order)
   end
 
   def cancel_order(order) do
@@ -193,10 +194,11 @@ defmodule BookingApi.OrdersManagement do
   end
 
   def set_order_as_failed(order, error) do
-    order
+    {:ok, order} = order
     |> Order.changeset(%{status: "failed", error: error})
     |> Repo.update()
-    |> publish_order_update
+
+    publish_order_update(order)
   end
 
   def book_order_with_store(id) do

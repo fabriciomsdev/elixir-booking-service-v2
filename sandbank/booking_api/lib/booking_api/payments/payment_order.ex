@@ -15,7 +15,7 @@ defmodule BookingApi.Payments.PaymentOrder do
   @doc false
   def changeset(payment_order, attrs) do
     payment_order
-    |> cast(attrs, [:value, :status])
+    |> cast(attrs, [:value, :status, :order_id])
     |> validate_required([:value, :status])
   end
 end

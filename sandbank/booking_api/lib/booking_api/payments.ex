@@ -4,6 +4,7 @@ defmodule BookingApi.Payments do
   """
 
   import Ecto.Query, warn: false
+  require Logger
   alias BookingApi.Repo
   alias BookingApi.Payments.PaymentOrder
   alias BookingApi.PaymentsProcessorWorker
@@ -58,7 +59,7 @@ defmodule BookingApi.Payments do
     )
   end
 
-  def process_payment_order(id, payment_data) do
+  def process_payment_order(id, %{ "credit_card" => credit_card, "cvv" => cvv, "expiration_date" => expiration_date }) do
     # send order to payment api to create a payment order http://locahost:4001/api/payment_orders
     # process response from payment api
     # if payment order is approved then update payment order status to approved
@@ -66,24 +67,26 @@ defmodule BookingApi.Payments do
     # return payment order updated
 
     payment_order = get_payment_order!(id)
+    IO.puts("Processing payment order #{payment_order.status}")
+
     payload = %{
-      credit_card: payment_data.credit_card,
-      cvv: payment_data.cvv,
-      expiration_date: payment_data.expiration_date,
-      value: payment_order.value
-    }
-    response = HTTPoison.post!("http://locahost:4001/api/payment_orders", body: payload)
+      "credit_card" => credit_card,
+      "cvv" => cvv,
+      "expiration_date" => expiration_date,
+      "amount" => Decimal.to_float(payment_order.value)
+    } |> Jason.encode!()
+    headers = [{"Content-Type", "application/json"}]
+    payment_service_url = Application.get_env(:booking_api, :payment_service_url)
+
+    response = HTTPoison.post!(payment_service_url, payload, headers)
 
     case response do
-      {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
-        {:ok, body: body}
-        |> update_payment_order(%{status: "approved"})
-      {:ok, %HTTPoison.Response{status_code: 420, body: body}} ->
-        {:error, %PaymentOrder{}}
-        |> update_payment_order(%{status: "error", error: "Payment was not approved -> " + body})
-      {:error, %HTTPoison.Error{reason: reason}} ->
-        {:error, %PaymentOrder{}}
-        |> update_payment_order(%{status: "error", error: "Payment was not approved -> " + reason})
+      %HTTPoison.Response{status_code: 200, body: body} ->
+        update_payment_order(payment_order, %{status: "approved"})
+      %HTTPoison.Response{status_code: 400, body: body} ->
+        update_payment_order(payment_order, %{status: "error", error: "Payment was not approved"})
+      %HTTPoison.Error{reason: reason} ->
+        update_payment_order(payment_order, %{status: "error", error: "Payment was not approved"})
     end
 
   end
@@ -101,10 +104,11 @@ defmodule BookingApi.Payments do
 
   """
   def update_payment_order(%PaymentOrder{} = payment_order, attrs) do
-    payment_order
+    {:ok, payment_order} = payment_order
     |> PaymentOrder.changeset(attrs)
     |> Repo.update()
-    |> BookingApi.Payments.send_payment_order_to_processing_queue
+
+    BookingApi.Payments.send_payment_order_to_processing_queue(payment_order)
   end
 
 
