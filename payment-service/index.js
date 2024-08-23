@@ -1,13 +1,15 @@
 const express = require('express');
 const app = express();
 const PORT = 3001;
+app.use(express.json());
+
 
 const state = {
     failures: 0,
     success: 0
 }
 
-app.post('/payment-order', (req, res)=>{
+app.post('/api/payment-orders', (req, res)=>{
     const payload = req.body;
     const result = {};
     let status = 200;
