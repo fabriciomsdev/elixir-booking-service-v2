@@ -68,3 +68,6 @@ config :phoenix, :plug_init_mode, :runtime
 
 # Disable swoosh api client as it is only required for production adapters.
 config :swoosh, :api_client, false
+
+# add a custom config from env VAR PAYMENT_SERVICE_URL
+config :booking_api, payment_service_url: System.get_env("PAYMENT_SERVICE_URL", "http://localhost:3001/api/payment-orders")
