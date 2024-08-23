@@ -16,6 +16,6 @@ defmodule BookingService.Orders.Customer do
   def changeset(customer, attrs) do
     customer
     |> cast(attrs, [:name, :email, :phone])
-    |> validate_required([:name, :email, :phone])
+    |> validate_required([:name, :email])
   end
 end
