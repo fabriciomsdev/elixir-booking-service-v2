@@ -9,7 +9,11 @@ const state = {
     success: 0
 }
 
-app.post('/api/payment-orders', (req, res)=>{
+const sleep = (ms) => {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+app.post('/api/payment-orders', async (req, res)=>{
     const payload = req.body;
     const result = {};
     let status = 200;
@@ -30,6 +34,8 @@ app.post('/api/payment-orders', (req, res)=>{
             status = 400;
         }
     }
+
+    await sleep(2000);
 
     return res.status(status).send(result);
 });
