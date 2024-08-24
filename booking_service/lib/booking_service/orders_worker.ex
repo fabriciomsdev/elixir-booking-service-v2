@@ -28,7 +28,8 @@ defmodule BookingService.OrdersUpdateProcessorWorker do
     order = %{
       order_id: order.id,
       status: order.status,
-      store_id: order.store_id
+      store_id: order.store_id,
+      error: order.error,
     }
 
     Phoenix.PubSub.broadcast(
