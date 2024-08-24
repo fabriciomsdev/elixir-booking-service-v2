@@ -1,5 +1,6 @@
 defmodule BookingServiceWeb.Router do
   use BookingServiceWeb, :router
+  import Phoenix.Socket
 
   pipeline :api do
     plug Corsica,
