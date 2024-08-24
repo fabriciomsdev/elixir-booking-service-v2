@@ -21,8 +21,20 @@ defmodule BookingService.OrdersUpdateProcessorWorker do
   end
 
   defp process_data(data) do
-    # Background task processing logic
     order = data
-    IO.inspect(order, label: "Processing in the background")
+    channel = "order:#{order.id}"
+    IO.inspect(order, label: "Processing order in the background")
+
+    order = %{
+      order_id: order.id,
+      status: order.status,
+      store_id: order.store_id
+    }
+
+    Phoenix.PubSub.broadcast(
+      BookingService.PubSub,
+      channel,
+      %{event: "order_update", order: order}
+    )
   end
 end
