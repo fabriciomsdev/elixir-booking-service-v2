@@ -1,0 +1,72 @@
+{
+  "info": {
+    "name": "Elixir - Booking",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "bruno",
+      "event": []
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Start Checkout",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": "http://localhost:4000/api/orders",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"4089db72-6b28-41b1-aecd-f27bc3f4948c\",\n  \"store_id\": \"236584ee-58e2-42fd-a4d4-e08133bbbb6b\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Fill Checkout",
+          "event": [],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "http://localhost:4000/api/orders/0bff6c84-9d5e-4c53-8d5b-99b4e1a498d5",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"store\": {\n    \"id\": \"236584ee-58e2-42fd-a4d4-e08133bbbb6b\"\n  },\n  \"items\": [\n    {\n      \"name\": \"Bags Storage\",\n      \"quantity\": 1\n    }\n  ],\n  \"customer\": {\n    \"name\": \"Cody\",\n    \"email\": \"fabricioms.dev@gmail.com\"\n  },\n  \"payment_order\": {\n    \"credit_card\": \"1234 5678 9012 3456\",\n    \"cvv\": \"123\",\n    \"expiration_date\": \"12/23\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Get Order",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:4000/api/orders/0bff6c84-9d5e-4c53-8d5b-99b4e1a498d5"
+          }
+        },
+        {
+          "name": "Get Categories Of Items To Store",
+          "event": [],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "http://localhost:4000/api/classifications"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": []
+}
