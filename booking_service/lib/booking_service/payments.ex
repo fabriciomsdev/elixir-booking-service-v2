@@ -2,13 +2,12 @@ defmodule BookingService.Payments do
   @moduledoc """
   The Payments context.
   """
-
-  import Ecto.Query, warn: false
   require Logger
+  import HTTPoison
+  import Ecto.Query, warn: false
   alias BookingService.Repo
   alias BookingService.Payments.PaymentOrder
   alias BookingService.PaymentsProcessorWorker
-  import HTTPoison
 
   def get_payment_update_queue, do: "payment_order_update"
 

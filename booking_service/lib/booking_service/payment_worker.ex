@@ -36,6 +36,7 @@ defmodule BookingService.PaymentsProcessorWorker do
     if payment_order.status == "approved" do
       IO.puts("Payment order approved -> #{payment_order.order_id}")
 
+      # todo: decouple this logic to a separate module
       order = OrdersManagement.get_order(payment_order.order_id)
       OrdersManagement.set_order_as_paid(order)
       OrdersManagement.book_order(order)
@@ -44,6 +45,7 @@ defmodule BookingService.PaymentsProcessorWorker do
     if payment_order.status == "error" do
       IO.puts("Payment order failed -> #{payment_order.order_id}")
 
+      # todo: decouple this logic to a separate module
       order = OrdersManagement.get_order(payment_order.order_id)
               |> OrdersManagement.set_order_as_failed("Payment order failed")
     end

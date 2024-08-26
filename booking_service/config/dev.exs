@@ -70,4 +70,4 @@ config :phoenix, :plug_init_mode, :runtime
 config :swoosh, :api_client, false
 
 # add a custom config from env VAR PAYMENT_SERVICE_URL
-config :booking_service, payment_service_url: System.get_env("PAYMENT_SERVICE_URL", "http://localhost:3001/api/payment-orders")
+config :booking_service, payment_service_url: System.get_env("PAYMENT_SERVICE_URL", "http://localhost:3000/api/payment-orders")
