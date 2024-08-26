@@ -4,34 +4,37 @@ This service is responsible for processing booking storage orders for common use
 
 
 ## Architecture Components:
-### Booking Service:
-This is the main application that contains the business logic of the service.The use cases of service are in: BookingService.OrdersManagement
 
-Source: 
-    - ./booking_service/lib/booking_service/application.ex
-    - ./booking_service/lib/booking_service/orders_management.ex
+### Booking Service:
+
+This is the main application that contains the business logic of the service.The use cases of service are in: BookingService.OrdersManagement
+Code are at folder: ./booking_service/lib/
+
+Sources: 
+    - /booking_service/application.ex <br />
+    - /booking_service/orders_management.ex <br />
 
 The communication with this service is done by HTTP requests implemented in the BookingServiceWeb module. Sources:
-    - ./booking_service/lib/booking_service_web/controllers/orders_controller.ex
-    - ./booking_service/lib/booking_service_web/controllers/items_classification_controller.ex
-    - ./booking_service/lib/booking_service_web/router.ex
+    - /booking_service_web/controllers/orders_controller.ex <br />
+    - /booking_service_web/controllers/items_classification_controller.ex <br />
+    - /booking_service_web/router.ex <br />
 
 ### Phoenix Channels (Booking Service Web Sockets):
 This is the module that is responsible to sernd orders updates for the communication between the service and the clients. It is implemented in the BookingServiceWeb module. 
 Sources:
-    - ./booking_service/lib/booking_service_web/channels/orders_channel.ex
-    - ./booking_service/lib/booking_service_web/endpoint.ex
-    - ./booking_service/lib/booking_service_web/router.ex
+    - /booking_service_web/channels/orders_channel.ex <br />
+    - /booking_service_web/endpoint.ex <br />
+    - /booking_service_web/router.ex <br />
 
 ### Orders Update Processor Worker:
 This worker is responsible to process the orders updates and send the updates to the clients. It is implemented in the BookingService and communicate directly with the web sockets module.
 
-Source: ./booking_service/lib/booking_service/orders_worker.ex
+Source: /booking_service/orders_worker.ex <br />
 
 ### Payments Processor Worker:
 This worker is responsible to process the payments of the orders. It is implemented in the BookingService and communicate directly with the fake payment service sending orders and awaiting the payment status, after get the payment status it updates the order status.
 
-Source: ./booking_service/lib/booking_service/payment_worker.ex
+Source: /booking_service/payment_worker.ex <br />
 
 ### Fake Payment Service:
 This is a fake service that simulates the payment service. It is implemented in the FakePaymentService module. It is used to simulate the payment service and return the payment status for the orders.
@@ -47,8 +50,8 @@ Booking order is the main entity of the service, it represents the order of a cu
 started -> filled -> paid -> booked
 
 Source: 
-    - ./booking_service/lib/booking_service/orders/order.ex
-    - ./booking_service/lib/booking_service/orders/order_item.ex
+    - /booking_service/orders/order.ex <br />
+    - /booking_service/orders/order_item.ex <br />
 
 #### Attributes:
     - id: UUID
@@ -67,22 +70,22 @@ Source:
 ### Store
 Store is the entity that represents the place where the items will be stored. It has a name, id and the orders on this store.
 Source: 
-    - ./booking_service/lib/booking_service/stores/store.ex
+    - /booking_service/stores/store.ex <br />
   
 ### Payment Order
 Payment Order is the entity that represents the payment order of the order. It has the status of the payment and total value of the order.
 Source: 
-    - ./booking_service/lib/booking_service/payments/payment_order.ex
+    - /booking_service/payments/payment_order.ex <br />
 
 ### Items Classification
 Items Classification is the entity that represents the possible items to store in the store. It has a name and the value to store the item.
 Source: 
-    - ./booking_service/lib/booking_service/items/classification.ex
+    - /booking_service/items/classification.ex <br />
     
 ### Customer
 Customer is the entity that represents the customer that is making the order. It has a name and email.
 Source: 
-    - ./booking_service/lib/booking_service/orders/customer.ex
+    - /booking_service/orders/customer.ex <br />
 
 ## How it runs
 ### Setup DB & UP fake payment service:
@@ -109,7 +112,7 @@ mix ecto.setup
 
 Feed Database:
 ```bash
-mix run priv/repo/seeds.exs
+mix run priv/repo/seeds.ex <br />s
 ```
 
 
