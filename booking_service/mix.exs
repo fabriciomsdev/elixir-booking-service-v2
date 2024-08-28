@@ -55,7 +55,9 @@ defmodule BookingService.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:httpoison, "~> 2.0"},
-      {:corsica, "~> 2.1"}
+      {:corsica, "~> 2.1"},
+      {:retry, "~> 0.18.0"},
+      {:logger_file_backend, "~> 0.0.14"}
     ]
   end
 
