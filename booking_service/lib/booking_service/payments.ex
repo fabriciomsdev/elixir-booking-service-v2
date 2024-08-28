@@ -8,6 +8,7 @@ defmodule BookingService.Payments do
   alias BookingService.Repo
   alias BookingService.Payments.PaymentOrder
   alias BookingService.PaymentsProcessorWorker
+  use Retry.Annotation
 
   def get_payment_update_queue, do: "payment_order_update"
 
@@ -58,6 +59,14 @@ defmodule BookingService.Payments do
     )
   end
 
+  @retry with: constant_backoff(100) |> Stream.take(10)
+  def send_order_to_payment_provider(payment_data) do
+    headers = [{"Content-Type", "application/json"}]
+    payment_service_url = Application.get_env(:booking_service, :payment_service_url)
+    response = HTTPoison.post!(payment_service_url, payment_data, headers)
+  end
+
+
   def process_payment_order(id, %{ "credit_card" => credit_card, "cvv" => cvv, "expiration_date" => expiration_date }) do
     # send order to payment api to create a payment order http://locahost:4001/api/payment_orders
     # process response from payment api
@@ -67,17 +76,14 @@ defmodule BookingService.Payments do
 
     payment_order = get_payment_order!(id)
     IO.puts("Processing payment order #{payment_order.status}")
-
-    payload = %{
+    payment_data = %{
       "credit_card" => credit_card,
       "cvv" => cvv,
       "expiration_date" => expiration_date,
       "amount" => Decimal.to_float(payment_order.value)
     } |> Jason.encode!()
-    headers = [{"Content-Type", "application/json"}]
-    payment_service_url = Application.get_env(:booking_service, :payment_service_url)
 
-    response = HTTPoison.post!(payment_service_url, payload, headers)
+    response = send_order_to_payment_provider(payment_data)
 
     case response do
       %HTTPoison.Response{status_code: 200, body: body} ->
