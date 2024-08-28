@@ -34,10 +34,10 @@ defmodule BookingService.OrdersManagement do
       status: "started",
       total_value: 0.0,
     })
-    |> Repo.insert()
-    |> publish_order_update
+    |> Repo.insert!()
+    |> publish_order_update()
 
-    order
+    {:ok, order}
   end
 
   def get_order(id) do
