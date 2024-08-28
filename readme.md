@@ -125,25 +125,26 @@ mix test
 
 Are in the folder ./collections
 
-
 ### API Documentation:
 
 #### Use cases:
 
-Start checkout:
-URL: http://localhost:4000/api/orders 
-Method: POST
-Body:
+#### Start checkout:
+<b>URL:</b> http://localhost:4000/api/orders  <br />
+<b>Method:</b> POST <br />
+<b>Body:</b>
+
 ```json
 {
   "store_id": "236584ee-58e2-42fd-a4d4-e08133bbbb6b"
 }
 ```
 
-Fill Checkout:
-http://localhost:4000/api/orders/{order_id}
-Method: PUT
-Body:
+#### Fill Checkout: 
+<b>URL:</b> http://localhost:4000/api/orders/{order_id} <br />
+<b>Method:</b> PUT <br />
+<b>Body:</b> <br />
+
 ```json
 {
   "store": {
@@ -167,10 +168,11 @@ Body:
 }
 ```
 
-Get Order:
-URL: http://localhost:4000/api/orders/{order_id}
-Method: GET
-Response:
+#### Get Order:
+<b>URL:</b> http://localhost:4000/api/orders/{order_id} <br />
+<b>Method:</b> GET <br />
+<b>Response:</b> <br />
+
 ```json
 {
   "error": "Payment order failed",
@@ -180,9 +182,10 @@ Response:
 }
 ```
 
-Get possible products to store:
-URL: http://localhost:4000/api/classifications
-Method: GET
+#### Get possible products to store:
+<b>URL:</b> http://localhost:4000/api/classifications <br />
+<b>Method:</b> GET <br />
+
 ```json
 [
   {
