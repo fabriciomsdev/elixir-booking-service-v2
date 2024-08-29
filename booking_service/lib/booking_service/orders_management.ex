@@ -173,7 +173,7 @@ defmodule BookingService.OrdersManagement do
   def calculate_costs(order, items) do
     order_items = []
     total_order_value = Enum.reduce(items, 0.0, fn %{"name" => name, "quantity" => quantity}, acc ->
-      item_classification = get_item_classification_by_name(name)
+      item_classification = get_item_classification_by_name(name) # TODO: use slugs or id search classification
       item_value = Decimal.to_float(item_classification.value_to_store) * quantity
       acc + item_value
     end)

@@ -7,6 +7,7 @@ defmodule BookingServiceWeb.OrdersUpdateSocket do
   # This function is called when a client connects to the socket.
   # You can use it to authenticate the user and assign default values to the socket.
   def connect(%{"token" => token}, socket, _connect_info) do
+    # TODO: authenticate
     {:ok, socket}
   end
 

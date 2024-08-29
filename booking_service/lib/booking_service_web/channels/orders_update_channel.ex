@@ -8,6 +8,7 @@ defmodule BookingServiceWeb.OrderUpdatesChannel do
   use BookingServiceWeb, :channel
 
   def join("order:"<> order_id, _message, socket) do
+    # TODO: verify user is the owner of the order
     IO.puts("Joining order: #{order_id}")
     {:ok, assign(socket, :order_id, order_id)}
   end
