@@ -6,6 +6,7 @@ defmodule BookingService.OrdersUpdateProcessorWorker do
   for processing order data.
   """
   use GenServer
+  require Logger
   alias BookingService.OrdersManagement
   alias BookingService.Payments
 
@@ -26,9 +27,9 @@ defmodule BookingService.OrdersUpdateProcessorWorker do
 
   defp process_data(data) do
     order = data
-    channel = "order:#{order.id}"
-    IO.inspect(order, label: "Processing order in the background")
+    Logger.info("Processing order #{order.id} on status #{order.status} in the background")
 
+    channel = "order:#{order.id}"
     order = %{
       order_id: order.id,
       status: order.status,

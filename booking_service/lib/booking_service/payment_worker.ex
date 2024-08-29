@@ -6,6 +6,7 @@ defmodule BookingService.PaymentsProcessorWorker do
   for processing payment data.
   """
   use GenServer
+  require Logger
   alias BookingService.Payments
   alias BookingService.OrdersManagement
 
@@ -26,8 +27,8 @@ defmodule BookingService.PaymentsProcessorWorker do
 
   defp process_data(data) do
     # Background task processing logic
-    IO.inspect(data, label: "Processing in the background")
     payment_order = data.order
+    Logger.info("Processing payment order #{payment_order.id} on status #{payment_order.status} in the background")
 
     if payment_order.status == "pending" do
       # Here we would process the payment order and update the status
