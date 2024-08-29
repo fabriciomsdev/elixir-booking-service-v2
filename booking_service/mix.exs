@@ -57,7 +57,9 @@ defmodule BookingService.MixProject do
       {:httpoison, "~> 2.0"},
       {:corsica, "~> 2.1"},
       {:retry, "~> 0.18.0"},
-      {:logger_file_backend, "~> 0.0.14"}
+      {:logger_file_backend, "~> 0.0.14"},
+      {:cachex, "~> 3.6"},
+      {:credo, "~> 1.6", only: [:dev, :test], runtime: false}
     ]
   end
 
