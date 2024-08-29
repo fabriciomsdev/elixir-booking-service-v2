@@ -1,3 +1,4 @@
+# TODO: It should be called StorePoint or StoragePoint instead of Store
 defmodule BookingService.Stores.Store do
   @moduledoc """
   This module defines the Store schema and changeset functions.
