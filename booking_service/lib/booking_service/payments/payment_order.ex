@@ -1,4 +1,7 @@
 defmodule BookingService.Payments.PaymentOrder do
+  @moduledoc """
+  A PaymentOrder represents a payment transaction associated with an order.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

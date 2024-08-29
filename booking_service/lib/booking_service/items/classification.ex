@@ -1,4 +1,8 @@
 defmodule BookingService.Items.Classification do
+  @moduledoc """
+  A Classification represents a category or type of item can be stored in a Store,
+  including its name and value to store.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

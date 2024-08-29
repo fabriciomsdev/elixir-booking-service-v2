@@ -1,4 +1,7 @@
 defmodule BookingServiceWeb.OrdersViews do
+  @moduledoc """
+    This module provides view functions for rendering JSON representations of orders.
+  """
   def render("new.json", %{order: order}) do
     %{id: order.id, status: order.status }
   end

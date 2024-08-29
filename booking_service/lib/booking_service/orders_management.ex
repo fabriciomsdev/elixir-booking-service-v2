@@ -201,18 +201,18 @@ defmodule BookingService.OrdersManagement do
     publish_order_update(order)
   end
 
+  # TODO: Send push notification for customer
+  # TODO: send a email for customer about order booked
   def book_order_with_store(id) do
     %Order{}
     |> Order.changeset(%{status: "booked"})
     |> Repo.update()
-    # TODO: Send push notification for customer
-    # TODO: send a email for customer about order booked
   end
 
   def cancel_order(id) do
+    # TODO: send a email for customer about order canceled
     get_order(id)
     |> Order.changeset(%{status: "canceled"})
     |> Repo.update()
-    # TODO: send a email for customer about order canceled
   end
 end

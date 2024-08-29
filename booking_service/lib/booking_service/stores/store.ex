@@ -1,4 +1,9 @@
 defmodule BookingService.Stores.Store do
+  @moduledoc """
+  This module defines the Store schema and changeset functions.
+
+  A Store represents a physical or online location where bookings can be made.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

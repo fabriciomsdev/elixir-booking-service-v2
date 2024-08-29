@@ -1,4 +1,8 @@
 defmodule BookingService.Orders.Order do
+  @moduledoc """
+  An Order represents a customer's order, including its status, total value,
+  associated customer, store, payment order, and items.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -38,7 +42,7 @@ defmodule BookingService.Orders.Order do
       :status,
       :error
     ])
-    |> validate_required([:status,:total_value])
+    |> validate_required([:status, :total_value])
     |> put_change(:status, String.downcase(attrs.status))
     |> put_change(:status, String.trim(attrs.status))
     |> validate_inclusion(:status, valid_status_list())

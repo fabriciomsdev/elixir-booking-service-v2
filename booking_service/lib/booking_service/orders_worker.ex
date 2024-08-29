@@ -1,4 +1,10 @@
 defmodule BookingService.OrdersUpdateProcessorWorker do
+  @moduledoc """
+  This module defines a GenServer that processes order updates in the background.
+
+  It subscribes to a PubSub topic for order updates and handles background tasks
+  for processing order data.
+  """
   use GenServer
   alias BookingService.OrdersManagement
   alias BookingService.Payments
@@ -8,13 +14,11 @@ defmodule BookingService.OrdersUpdateProcessorWorker do
   end
 
   def init(_) do
-    # Subscribe to the topic
     Phoenix.PubSub.subscribe(BookingService.PubSub, OrdersManagement.get_orders_update_queue())
     {:ok, %{}}
   end
 
   def handle_info({:do_background_task, data}, state) do
-    # Perform your background task here
     Task.start(fn -> process_data(data) end)
 
     {:noreply, state}

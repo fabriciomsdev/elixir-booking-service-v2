@@ -1,4 +1,8 @@
 defmodule BookingService.Orders.Customer do
+  @moduledoc """
+  A Customer represents a user who places orders, including their name, email,
+  and phone number.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 

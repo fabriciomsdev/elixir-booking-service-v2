@@ -1,4 +1,10 @@
 defmodule BookingServiceWeb.OrderUpdatesChannel do
+  @moduledoc """
+  This module handles the WebSocket channel for order updates.
+
+  It allows clients to join a channel for a specific order and receive real-time updates
+  about the order status.
+  """
   use BookingServiceWeb, :channel
 
   def join("order:"<> order_id, _message, socket) do

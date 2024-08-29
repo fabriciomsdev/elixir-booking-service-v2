@@ -1,5 +1,8 @@
 defmodule BookingService.ItemsClassification do
-  # Do a simple crud context for BookingService.Items.Classification
+  @moduledoc """
+    The Items Classification context, is the context responsible for managing the classification
+    of items can be stored in the system.
+  """
   import Ecto.Query, warn: false
 
   alias BookingService.Repo

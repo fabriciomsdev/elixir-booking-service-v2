@@ -22,7 +22,7 @@ defmodule BookingServiceWeb.OrdersController do
     end
   end
 
-  def update(conn, %{"id" => id, "store" => %{ "id" => store_id }, "items" => items, "customer" => customer, "payment_order" => payment_order}) do
+  def update(conn, %{"id" => id, "store" => %{"id" => store_id}, "items" => items, "customer" => customer, "payment_order" => payment_order}) do
     case OrdersManagement.process_order(id, store_id, items, customer, payment_order) do
       {:ok, order} ->
         conn

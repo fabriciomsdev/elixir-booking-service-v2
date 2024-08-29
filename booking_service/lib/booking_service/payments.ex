@@ -55,7 +55,7 @@ defmodule BookingService.Payments do
     Phoenix.PubSub.broadcast(
       BookingService.PubSub,
       get_payment_update_queue(),
-      {:do_background_task, %{ order: payment_order, payment_data: payment_data }}
+      {:do_background_task, %{order: payment_order, payment_data: payment_data}}
     )
   end
 
@@ -67,7 +67,7 @@ defmodule BookingService.Payments do
   end
 
 
-  def process_payment_order(id, %{ "credit_card" => credit_card, "cvv" => cvv, "expiration_date" => expiration_date }) do
+  def process_payment_order(id, %{"credit_card" => credit_card, "cvv" => cvv, "expiration_date" => expiration_date}) do
     # send order to payment api to create a payment order http://locahost:4001/api/payment_orders
     # process response from payment api
     # if payment order is approved then update payment order status to approved

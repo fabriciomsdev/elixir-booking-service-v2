@@ -11,6 +11,7 @@ defmodule BookingServiceWeb.ItemsClassificationController do
   end
 
   def list(conn, _) do
+    # TODO: cache this return
     case ItemsClassification.list() do
       {:ok, items_classification} ->
         conn

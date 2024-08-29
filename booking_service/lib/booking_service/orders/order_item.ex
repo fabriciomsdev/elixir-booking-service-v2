@@ -1,4 +1,8 @@
 defmodule BookingService.Orders.OrderItem do
+  @moduledoc """
+  An OrderItem represents an item within an order, including its total value,
+  quantity, and associations with an order and classification.
+  """
   use Ecto.Schema
   import Ecto.Changeset
 
