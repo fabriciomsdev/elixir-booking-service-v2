@@ -10,6 +10,7 @@ config :booking_service, BookingService.Repo,
   password: "postgres",
   hostname: "localhost",
   database: "booking_service_test#{System.get_env("MIX_TEST_PARTITION")}",
+  port: 5500,
   pool: Ecto.Adapters.SQL.Sandbox,
   pool_size: System.schedulers_online() * 2
 
