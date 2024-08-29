@@ -9,7 +9,7 @@ defmodule BookingService.ItemsClassification do
   alias BookingService.Items.Classification
 
   def get_classification_by_name(name) do
-    Repo.one(from i in ItemsClassification, where: i.name == ^name)
+    Repo.one(from i in Classification, where: i.name == ^name)
   end
 
   def create_classification(attrs) do

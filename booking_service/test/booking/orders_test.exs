@@ -37,8 +37,8 @@ defmodule BookingService.OrdersTest do
     end
 
     def add_a_item_classification() do
-      %ItemsClassification{}
-      |> ItemsClassification.changeset(%{name: "Bags Storage", value_to_store: 10.0})
+      %Classification{}
+      |> Classification.changeset(%{name: "Bags Storage", value_to_store: 10.0})
       |> Repo.insert()
     end
 
